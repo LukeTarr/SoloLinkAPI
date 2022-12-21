@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoloLinkAPI.DTOs;
@@ -8,11 +7,12 @@ namespace SoloLinkAPI.Services;
 
 public class ProfileService : IProfileService
 {
+    private readonly IHttpContextAccessor _accessor;
     private readonly SoloLinkDatabaseContext _context;
     private readonly ILogger _logger;
-    private readonly IHttpContextAccessor _accessor;
 
-    public ProfileService(SoloLinkDatabaseContext context, ILogger<ProfileService> logger, IHttpContextAccessor accessor)
+    public ProfileService(SoloLinkDatabaseContext context, ILogger<ProfileService> logger,
+        IHttpContextAccessor accessor)
     {
         _context = context;
         _logger = logger;
@@ -66,6 +66,4 @@ public class ProfileService : IProfileService
     {
         return GetUserContent(_accessor.HttpContext.User.Identity.Name);
     }
-    
-    
 }

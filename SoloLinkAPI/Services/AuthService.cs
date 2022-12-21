@@ -86,23 +86,22 @@ public class AuthService : IAuthService
     public async Task<Dictionary<string, string>> ChangeUsername(UsernameDTO dto)
     {
         var res = new Dictionary<string, string>();
-        
-        Console.WriteLine(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value);
 
-        var user = await _context.Users.FirstOrDefaultAsync(row =>
-            _accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value.Equals(row.UserId.ToString()));
-
-        if (user == null)
-        {
-            res.Add("Error", $"No user with found.");
-            return res;
-        }
-        
         await using var transaction = await _context.Database.BeginTransactionAsync();
+
+        User userResult;
 
         try
         {
-            
+            var user = await _context.Users.FirstOrDefaultAsync(row =>
+                _accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value.Equals(row.UserId.ToString()));
+
+            if (user == null)
+            {
+                res.Add("Error", "No user with found.");
+                return res;
+            }
+
             var lookup = await _context.Users.FirstOrDefaultAsync(row => dto.Username.Equals(row.Username));
             if (lookup != null)
             {
@@ -113,11 +112,9 @@ public class AuthService : IAuthService
             user.Username = dto.Username;
 
             _context.Users.Update(user);
-            
-            
+            userResult = user;
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
-
         }
         catch (Exception e)
         {
@@ -126,38 +123,48 @@ public class AuthService : IAuthService
             res.Add("Error", "Couldn't edit user account.");
             return res;
         }
-        
-        res.Add("Message", "Success");
+
+        res.Add("Token", GenerateToken(userResult));
         return res;
     }
-    
+
     public async Task<Dictionary<string, string>> ChangePassword(PasswordDTO dto)
     {
         var res = new Dictionary<string, string>();
 
-        var user = await _context.Users.FirstOrDefaultAsync(row =>
-            _accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value.Equals(row.UserId.ToString()));
-
-        if (user == null)
-        {
-            res.Add("Error", "No user with found.");
-            return res;
-        }
-        
         await using var transaction = await _context.Database.BeginTransactionAsync();
 
         try
         {
+            var user = await _context.Users.FirstOrDefaultAsync(row =>
+                _accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value.Equals(row.UserId.ToString()));
+
+            if (user == null)
+            {
+                res.Add("Error", "No user with found.");
+                return res;
+            }
+
+            if (!dto.Password.Equals(dto.RepeatPassword))
+            {
+                res.Add("Error", "Passwords do not match.");
+                return res;
+            }
+
+            if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.Password))
+            {
+                res.Add("Error", "Current password is incorrect.");
+                return res;
+            }
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
             user.Password = passwordHash;
 
             _context.Users.Update(user);
-            
-            
+
+
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
-
         }
         catch (Exception e)
         {
@@ -166,7 +173,7 @@ public class AuthService : IAuthService
             res.Add("Error", "Couldn't edit user account.");
             return res;
         }
-        
+
         res.Add("Message", "Success");
         return res;
     }
@@ -176,8 +183,7 @@ public class AuthService : IAuthService
         var claims = new List<Claim>
         {
             new(ClaimTypes.NameIdentifier, user.UserId.ToString()),
-            new(ClaimTypes.Name, user.Username.ToString()),
-            
+            new(ClaimTypes.Name, user.Username)
         };
 
         var key = new SymmetricSecurityKey(

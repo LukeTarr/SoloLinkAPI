@@ -29,7 +29,8 @@ public class CategoryService : ICategoryService
             return res;
         }
 
-        _context.Categories.AddAsync(new Category(int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value), dto.Title));
+        _context.Categories.AddAsync(
+            new Category(int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value), dto.Title));
         await _context.SaveChangesAsync();
 
         res.Add("Message", "Success");
@@ -68,7 +69,8 @@ public class CategoryService : ICategoryService
                 return res;
             }
 
-            if (!category.UserId.Equals(int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value)))
+            if (!category.UserId.Equals(
+                    int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value)))
             {
                 res.Add("Error", "Unauthorized to access that category");
                 return res;

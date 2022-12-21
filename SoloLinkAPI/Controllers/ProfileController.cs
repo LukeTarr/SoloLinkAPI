@@ -22,13 +22,11 @@ public class ProfileController : ControllerBase
     {
         return _profileService.GetUserContent(username);
     }
-    
+
     [Authorize]
     [HttpGet("GetMyContent")]
     public Task<IActionResult> GetMyContent()
     {
         return _profileService.GetMyContent();
     }
-
-    
 }

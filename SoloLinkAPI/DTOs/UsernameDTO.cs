@@ -14,6 +14,4 @@ public class UsernameDTO
     }
 
     [Required] public string Username { get; set; }
-    
-    
 }

@@ -69,7 +69,8 @@ public class LinkService : ILinkService
                 categoryCurrent =
                     await _context.Categories.FirstOrDefaultAsync(row => row.CategoryId == link.CategoryId);
 
-                if (!categoryCurrent.UserId.Equals(int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value)))
+                if (!categoryCurrent.UserId.Equals(int.Parse(_accessor.HttpContext.User
+                        .FindFirst(ClaimTypes.NameIdentifier).Value)))
                 {
                     res.Add("Error", "Unauthorized to access that link");
                     return res;
@@ -84,7 +85,8 @@ public class LinkService : ILinkService
                 return res;
             }
 
-            if (!category.UserId.Equals(int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value)))
+            if (!category.UserId.Equals(
+                    int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value)))
             {
                 res.Add("Error", "Unauthorized to access that category");
                 return res;

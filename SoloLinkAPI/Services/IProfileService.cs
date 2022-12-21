@@ -6,5 +6,4 @@ public interface IProfileService
 {
     public Task<IActionResult> GetUserContent(string username);
     public Task<IActionResult> GetMyContent();
-    
 }

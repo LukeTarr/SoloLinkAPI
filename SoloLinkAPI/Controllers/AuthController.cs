@@ -29,14 +29,16 @@ public class AuthController : ControllerBase
     {
         return _authService.Login(body);
     }
-    
-    [HttpPut("ChangePassword"), Authorize]
+
+    [HttpPut("ChangePassword")]
+    [Authorize]
     public Task<Dictionary<string, string>> ChangePassword(PasswordDTO body)
     {
         return _authService.ChangePassword(body);
     }
-    
-    [HttpPut("ChangeUsername"), Authorize]
+
+    [HttpPut("ChangeUsername")]
+    [Authorize]
     public Task<Dictionary<string, string>> ChangeUsername(UsernameDTO body)
     {
         return _authService.ChangeUsername(body);
