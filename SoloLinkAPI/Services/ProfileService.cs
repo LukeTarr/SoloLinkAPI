@@ -29,7 +29,7 @@ public class ProfileService : IProfileService
         {
             var user = await _context.Users.FirstOrDefaultAsync(row => row.Username == username);
 
-            if (user is null)
+            if (user == null)
             {
                 res.Add("Error", "Username not found");
                 return new OkObjectResult(res);

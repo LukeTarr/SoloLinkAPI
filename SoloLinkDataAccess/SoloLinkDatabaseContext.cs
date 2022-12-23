@@ -19,6 +19,8 @@ public class SoloLinkDatabaseContext : DbContext
 
     public DbSet<Link>? Links { get; set; }
 
+    public DbSet<PageView> PageViews { get; set; }
+
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
     {
         optionsBuilder.UseNpgsql(_configuration.GetConnectionString("WebApiDatabase"));
