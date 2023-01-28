@@ -38,12 +38,6 @@ public class LinkService : ILinkService
     {
         var res = new Dictionary<string, string>();
 
-        if (_accessor.HttpContext == null)
-        {
-            res.Add("Error", "No Context");
-            return res;
-        }
-
         await using var transaction = await _context.Database.BeginTransactionAsync();
 
         try
@@ -62,7 +56,7 @@ public class LinkService : ILinkService
 
                 if (link is null)
                 {
-                    res.Add("Error", "Link doesn't exist");
+                    res.Add("error", "link doesn't exist");
                     return res;
                 }
 
@@ -72,7 +66,7 @@ public class LinkService : ILinkService
                 if (!categoryCurrent.UserId.Equals(int.Parse(_accessor.HttpContext.User
                         .FindFirst(ClaimTypes.NameIdentifier).Value)))
                 {
-                    res.Add("Error", "Unauthorized to access that link");
+                    res.Add("error", "unauthorized to access that link");
                     return res;
                 }
 
@@ -81,14 +75,14 @@ public class LinkService : ILinkService
 
             if (category is null)
             {
-                res.Add("Error", "Category doesn't exist");
+                res.Add("error", "category doesn't exist");
                 return res;
             }
 
             if (!category.UserId.Equals(
                     int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value)))
             {
-                res.Add("Error", "Unauthorized to access that category");
+                res.Add("error", "unauthorized to access that category");
                 return res;
             }
 
@@ -116,11 +110,11 @@ public class LinkService : ILinkService
         {
             _logger.Log(LogLevel.Critical, "trying to edit Link that doesn't exist");
             await transaction.RollbackAsync();
-            res.Add("Error", "Couldn't edit Link.");
+            res.Add("error", "couldn't edit Link.");
             return res;
         }
 
-        res.Add("Message", "Success");
+        res.Add("message", "success");
         return res;
     }
 }

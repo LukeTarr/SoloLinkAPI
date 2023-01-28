@@ -23,17 +23,11 @@ public class CategoryService : ICategoryService
     {
         var res = new Dictionary<string, string>();
 
-        if (_accessor.HttpContext == null)
-        {
-            res.Add("Error", "No Context");
-            return res;
-        }
-
         _context.Categories.AddAsync(
             new Category(int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value), dto.Title));
         await _context.SaveChangesAsync();
 
-        res.Add("Message", "Success");
+        res.Add("message", "success");
         return res;
     }
 
@@ -51,12 +45,6 @@ public class CategoryService : ICategoryService
     {
         var res = new Dictionary<string, string>();
 
-        if (_accessor.HttpContext == null)
-        {
-            res.Add("Error", "No Context");
-            return res;
-        }
-
         await using var transaction = await _context.Database.BeginTransactionAsync();
 
         try
@@ -65,14 +53,14 @@ public class CategoryService : ICategoryService
 
             if (category is null)
             {
-                res.Add("Error", "Category doesn't exist");
+                res.Add("error", "category doesn't exist");
                 return res;
             }
 
             if (!category.UserId.Equals(
                     int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value)))
             {
-                res.Add("Error", "Unauthorized to access that category");
+                res.Add("error", "unauthorized to access that category");
                 return res;
             }
 
@@ -93,11 +81,11 @@ public class CategoryService : ICategoryService
         {
             _logger.Log(LogLevel.Critical, "trying to edit Category that doesn't exist");
             await transaction.RollbackAsync();
-            res.Add("Error", "Couldn't edit category.");
+            res.Add("error", "couldn't edit category.");
             return res;
         }
 
-        res.Add("Message", "Success");
+        res.Add("nessage", "success");
         return res;
     }
 }

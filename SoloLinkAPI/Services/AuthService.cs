@@ -30,7 +30,7 @@ public class AuthService : IAuthService
 
         if (!dto.Password.Equals(dto.RepeatPassword))
         {
-            res.Add("Error", "Passwords do not match");
+            res.Add("error", "Passwords do not match");
             return res;
         }
 
@@ -46,7 +46,7 @@ public class AuthService : IAuthService
             else
                 error = "Username";
 
-            res.Add("Error", $"{error} already exists");
+            res.Add("error", $"{error} already exists");
             return res;
         }
 
@@ -56,7 +56,7 @@ public class AuthService : IAuthService
         await _context.Users.AddAsync(new User(dto.Email, dto.Username, passwordHash));
         await _context.SaveChangesAsync();
 
-        res.Add("Message", "Success");
+        res.Add("message", "success");
         return res;
     }
 
@@ -69,17 +69,17 @@ public class AuthService : IAuthService
 
         if (user == null)
         {
-            res.Add("Error", $"No user with email {dto.Email} found");
+            res.Add("error", $"No user with email {dto.Email} found");
             return res;
         }
 
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
         {
-            res.Add("Error", $"Wrong password for user {dto.Email}");
+            res.Add("error", $"Wrong password for user {dto.Email}");
             return res;
         }
 
-        res.Add("Token", GenerateToken(user));
+        res.Add("token", GenerateToken(user));
         return res;
     }
 
@@ -98,14 +98,14 @@ public class AuthService : IAuthService
 
             if (user == null)
             {
-                res.Add("Error", "No user with found.");
+                res.Add("error", "No user with found.");
                 return res;
             }
 
             var lookup = await _context.Users.FirstOrDefaultAsync(row => dto.Username.Equals(row.Username));
             if (lookup != null)
             {
-                res.Add("Error", "Username already taken.");
+                res.Add("error", "Username already taken.");
                 return res;
             }
 
@@ -120,11 +120,11 @@ public class AuthService : IAuthService
         {
             _logger.Log(LogLevel.Critical, "trying to edit user account that doesn't exist");
             await transaction.RollbackAsync();
-            res.Add("Error", "Couldn't edit user account.");
+            res.Add("error", "Couldn't edit user account.");
             return res;
         }
 
-        res.Add("Token", GenerateToken(userResult));
+        res.Add("token", GenerateToken(userResult));
         return res;
     }
 
@@ -141,19 +141,19 @@ public class AuthService : IAuthService
 
             if (user == null)
             {
-                res.Add("Error", "No user with found.");
+                res.Add("error", "No user with found.");
                 return res;
             }
 
             if (!dto.Password.Equals(dto.RepeatPassword))
             {
-                res.Add("Error", "Passwords do not match.");
+                res.Add("error", "Passwords do not match.");
                 return res;
             }
 
             if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.Password))
             {
-                res.Add("Error", "Current password is incorrect.");
+                res.Add("error", "Current password is incorrect.");
                 return res;
             }
 
@@ -170,11 +170,11 @@ public class AuthService : IAuthService
         {
             _logger.Log(LogLevel.Critical, "trying to edit user account that doesn't exist");
             await transaction.RollbackAsync();
-            res.Add("Error", "Couldn't edit user account.");
+            res.Add("error", "Couldn't edit user account.");
             return res;
         }
 
-        res.Add("Message", "Success");
+        res.Add("message", "success");
         return res;
     }
 

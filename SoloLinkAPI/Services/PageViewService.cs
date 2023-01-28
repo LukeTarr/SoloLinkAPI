@@ -33,7 +33,7 @@ public class PageViewService : IPageViewService
 
             if (user == null)
             {
-                res.Add("Error", "Username not found");
+                res.Add("error", "Username not found");
                 return new OkObjectResult(res);
             }
 
@@ -41,14 +41,14 @@ public class PageViewService : IPageViewService
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
 
-            res.Add("Message", "Success");
+            res.Add("message", "success");
             return new OkObjectResult(res);
         }
         catch
         {
             _logger.Log(LogLevel.Critical, "Incrementing PageView count failed");
             await transaction.RollbackAsync();
-            res.Add("Error", "Couldn't edit PageView.");
+            res.Add("error", "couldn't edit PageView.");
             return new OkObjectResult(res);
         }
     }
@@ -66,7 +66,7 @@ public class PageViewService : IPageViewService
 
             if (user == null)
             {
-                res.Add("Error", "User not found");
+                res.Add("error", "user not found");
                 return new OkObjectResult(res);
             }
 
@@ -84,7 +84,7 @@ public class PageViewService : IPageViewService
         {
             _logger.Log(LogLevel.Critical, "Getting Analytics failed");
             await transaction.RollbackAsync();
-            res.Add("Error", "Couldn't get Analytics.");
+            res.Add("error", "couldn't get Analytics.");
             return new OkObjectResult(res);
         }
     }

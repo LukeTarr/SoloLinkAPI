@@ -31,7 +31,7 @@ public class ProfileService : IProfileService
 
             if (user == null)
             {
-                res.Add("Error", "Username not found");
+                res.Add("error", "Username not found");
                 return new OkObjectResult(res);
             }
 
@@ -57,7 +57,7 @@ public class ProfileService : IProfileService
         {
             _logger.Log(LogLevel.Critical, "trying to get user content failed");
             await transaction.RollbackAsync();
-            res.Add("Error", "Couldn't edit category.");
+            res.Add("error", "couldn't edit category.");
             return new OkObjectResult(res);
         }
     }
