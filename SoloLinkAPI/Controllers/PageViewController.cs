@@ -22,9 +22,9 @@ public class PageViewController : ControllerBase
     }
 
     [Authorize]
-    [HttpGet("GetMyPageViews")]
-    public Task<IActionResult> GetMyPageViews()
+    [HttpGet("GetAnalytics")]
+    public Task<IActionResult> GetAnalytics()
     {
-        return _pageViewService.GetMyPageViews();
+        return _pageViewService.GetMyAnalytics();
     }
 }

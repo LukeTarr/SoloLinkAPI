@@ -53,7 +53,7 @@ public class PageViewService : IPageViewService
         }
     }
 
-    public async Task<IActionResult> GetMyPageViews()
+    public async Task<IActionResult> GetMyAnalytics()
     {
         var res = new Dictionary<string, string>();
 
@@ -66,23 +66,25 @@ public class PageViewService : IPageViewService
 
             if (user == null)
             {
-                res.Add("Error", "Username not found");
+                res.Add("Error", "User not found");
                 return new OkObjectResult(res);
             }
 
+            var viewList = _context.PageViews.Where(view => view.UserId == user.UserId)
+                .GroupBy(view => view.ViewDateTime.Date)
+                .Select(viewGroup => new ViewBucket { Date = viewGroup.Key, TotalViews = viewGroup.Sum(x => 1) })
+                .ToList();
 
-            var pageViews = _context.PageViews.Where(row => row.UserId.Equals(user.UserId)).ToList();
-            var views = new List<ViewDTO>();
-            foreach (var pageView in pageViews) views.Add(new ViewDTO(pageView.UserId, pageView.ViewDateTime));
-            var pageViewDTO = new PageViewDTO(user.Username, views);
 
-            return new OkObjectResult(pageViewDTO);
+            var analytics = new AnalyticsDTO(user.Username, viewList);
+
+            return new OkObjectResult(analytics);
         }
         catch
         {
-            _logger.Log(LogLevel.Critical, "Getting PageView count failed");
+            _logger.Log(LogLevel.Critical, "Getting Analytics failed");
             await transaction.RollbackAsync();
-            res.Add("Error", "Couldn't get PageView.");
+            res.Add("Error", "Couldn't get Analytics.");
             return new OkObjectResult(res);
         }
     }

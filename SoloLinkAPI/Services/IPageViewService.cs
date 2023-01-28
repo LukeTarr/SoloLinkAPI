@@ -5,5 +5,5 @@ namespace SoloLinkAPI.Services;
 public interface IPageViewService
 {
     public Task<IActionResult> IncrementViewCount(string username);
-    public Task<IActionResult> GetMyPageViews();
+    public Task<IActionResult> GetMyAnalytics();
 }
