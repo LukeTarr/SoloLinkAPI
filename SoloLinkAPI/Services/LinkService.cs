@@ -1,4 +1,5 @@
 using System.Security.Claims;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using SoloLinkAPI.DTOs;
 using SoloLinkDataAccess;
@@ -19,22 +20,22 @@ public class LinkService : ILinkService
         _logger = logger;
     }
 
-    public async Task<Dictionary<string, string>> Post(LinkDTO dto)
+    public async Task<IActionResult> Post(LinkDTO dto)
     {
         return await DoTransactionalQuery("post", dto: dto);
     }
 
-    public async Task<Dictionary<string, string>> Put(int id, LinkDTO dto)
+    public async Task<IActionResult> Put(int id, LinkDTO dto)
     {
         return await DoTransactionalQuery("put", id, dto);
     }
 
-    public async Task<Dictionary<string, string>> Delete(int id)
+    public async Task<IActionResult> Delete(int id)
     {
         return await DoTransactionalQuery("delete", id);
     }
 
-    private async Task<Dictionary<string, string>> DoTransactionalQuery(string action, int id = 0, LinkDTO dto = null)
+    private async Task<IActionResult> DoTransactionalQuery(string action, int id = 0, LinkDTO dto = null)
     {
         var res = new Dictionary<string, string>();
 
@@ -57,7 +58,7 @@ public class LinkService : ILinkService
                 if (link is null)
                 {
                     res.Add("error", "link doesn't exist");
-                    return res;
+                    return new OkObjectResult(res);
                 }
 
                 categoryCurrent =
@@ -67,7 +68,7 @@ public class LinkService : ILinkService
                         .FindFirst(ClaimTypes.NameIdentifier).Value)))
                 {
                     res.Add("error", "unauthorized to access that link");
-                    return res;
+                    return new OkObjectResult(res);
                 }
 
                 if (action == "delete") category = categoryCurrent;
@@ -76,14 +77,14 @@ public class LinkService : ILinkService
             if (category is null)
             {
                 res.Add("error", "category doesn't exist");
-                return res;
+                return new OkObjectResult(res);
             }
 
             if (!category.UserId.Equals(
                     int.Parse(_accessor.HttpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value)))
             {
                 res.Add("error", "unauthorized to access that category");
-                return res;
+                return new OkObjectResult(res);
             }
 
             if (action.Equals("post"))
@@ -111,10 +112,10 @@ public class LinkService : ILinkService
             _logger.Log(LogLevel.Critical, "trying to edit Link that doesn't exist");
             await transaction.RollbackAsync();
             res.Add("error", "couldn't edit Link.");
-            return res;
+            return new OkObjectResult(res);
         }
 
         res.Add("message", "success");
-        return res;
+        return new OkObjectResult(res);
     }
 }

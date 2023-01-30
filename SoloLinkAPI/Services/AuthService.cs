@@ -1,6 +1,7 @@
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using SoloLinkAPI.DTOs;
@@ -24,14 +25,14 @@ public class AuthService : IAuthService
         _accessor = accessor;
     }
 
-    public async Task<Dictionary<string, string>> Register(RegisterPostDto dto)
+    public async Task<IActionResult> Register(RegisterPostDto dto)
     {
         var res = new Dictionary<string, string>();
 
         if (!dto.Password.Equals(dto.RepeatPassword))
         {
             res.Add("error", "Passwords do not match");
-            return res;
+            return new OkObjectResult(res);
         }
 
         var user = await _context.Users
@@ -47,7 +48,7 @@ public class AuthService : IAuthService
                 error = "Username";
 
             res.Add("error", $"{error} already exists");
-            return res;
+            return new OkObjectResult(res);
         }
 
 
@@ -57,10 +58,10 @@ public class AuthService : IAuthService
         await _context.SaveChangesAsync();
 
         res.Add("message", "success");
-        return res;
+        return new OkObjectResult(res);
     }
 
-    public async Task<Dictionary<string, string>> Login(LoginPostDto dto)
+    public async Task<IActionResult> Login(LoginPostDto dto)
     {
         var res = new Dictionary<string, string>();
 
@@ -70,20 +71,20 @@ public class AuthService : IAuthService
         if (user == null)
         {
             res.Add("error", $"No user with email {dto.Email} found");
-            return res;
+            return new OkObjectResult(res);
         }
 
         if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.Password))
         {
             res.Add("error", $"Wrong password for user {dto.Email}");
-            return res;
+            return new OkObjectResult(res);
         }
 
         res.Add("token", GenerateToken(user));
-        return res;
+        return new OkObjectResult(res);
     }
 
-    public async Task<Dictionary<string, string>> ChangeUsername(UsernameDTO dto)
+    public async Task<IActionResult> ChangeUsername(UsernameDTO dto)
     {
         var res = new Dictionary<string, string>();
 
@@ -99,14 +100,14 @@ public class AuthService : IAuthService
             if (user == null)
             {
                 res.Add("error", "No user with found.");
-                return res;
+                return new OkObjectResult(res);
             }
 
             var lookup = await _context.Users.FirstOrDefaultAsync(row => dto.Username.Equals(row.Username));
             if (lookup != null)
             {
                 res.Add("error", "Username already taken.");
-                return res;
+                return new OkObjectResult(res);
             }
 
             user.Username = dto.Username;
@@ -121,14 +122,14 @@ public class AuthService : IAuthService
             _logger.Log(LogLevel.Critical, "trying to edit user account that doesn't exist");
             await transaction.RollbackAsync();
             res.Add("error", "Couldn't edit user account.");
-            return res;
+            return new OkObjectResult(res);
         }
 
         res.Add("token", GenerateToken(userResult));
-        return res;
+        return new OkObjectResult(res);
     }
 
-    public async Task<Dictionary<string, string>> ChangePassword(PasswordDTO dto)
+    public async Task<IActionResult> ChangePassword(PasswordDTO dto)
     {
         var res = new Dictionary<string, string>();
 
@@ -142,19 +143,19 @@ public class AuthService : IAuthService
             if (user == null)
             {
                 res.Add("error", "No user with found.");
-                return res;
+                return new OkObjectResult(res);
             }
 
             if (!dto.Password.Equals(dto.RepeatPassword))
             {
                 res.Add("error", "Passwords do not match.");
-                return res;
+                return new OkObjectResult(res);
             }
 
             if (!BCrypt.Net.BCrypt.Verify(dto.CurrentPassword, user.Password))
             {
                 res.Add("error", "Current password is incorrect.");
-                return res;
+                return new OkObjectResult(res);
             }
 
             var passwordHash = BCrypt.Net.BCrypt.HashPassword(dto.Password);
@@ -171,11 +172,11 @@ public class AuthService : IAuthService
             _logger.Log(LogLevel.Critical, "trying to edit user account that doesn't exist");
             await transaction.RollbackAsync();
             res.Add("error", "Couldn't edit user account.");
-            return res;
+            return new OkObjectResult(res);
         }
 
         res.Add("message", "success");
-        return res;
+        return new OkObjectResult(res);
     }
 
     private string GenerateToken(User user)

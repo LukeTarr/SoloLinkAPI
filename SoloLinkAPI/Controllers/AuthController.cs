@@ -19,27 +19,27 @@ public class AuthController : ControllerBase
     }
 
     [HttpPost("Register")]
-    public Task<Dictionary<string, string>> Register(RegisterPostDto body)
+    public Task<IActionResult> Register(RegisterPostDto body)
     {
         return _authService.Register(body);
     }
 
     [HttpPost("Login")]
-    public Task<Dictionary<string, string>> Login(LoginPostDto body)
+    public Task<IActionResult> Login(LoginPostDto body)
     {
         return _authService.Login(body);
     }
 
     [HttpPut("ChangePassword")]
     [Authorize]
-    public Task<Dictionary<string, string>> ChangePassword(PasswordDTO body)
+    public Task<IActionResult> ChangePassword(PasswordDTO body)
     {
         return _authService.ChangePassword(body);
     }
 
     [HttpPut("ChangeUsername")]
     [Authorize]
-    public Task<Dictionary<string, string>> ChangeUsername(UsernameDTO body)
+    public Task<IActionResult> ChangeUsername(UsernameDTO body)
     {
         return _authService.ChangeUsername(body);
     }

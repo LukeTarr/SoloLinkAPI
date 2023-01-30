@@ -1,10 +1,11 @@
+using Microsoft.AspNetCore.Mvc;
 using SoloLinkAPI.DTOs;
 
 namespace SoloLinkAPI.Services;
 
 public interface ICategoryService
 {
-    public Task<Dictionary<string, string>> Post(CategoryDTO dto);
-    public Task<Dictionary<string, string>> Put(int id, CategoryDTO dto);
-    public Task<Dictionary<string, string>> Delete(int id);
+    public Task<IActionResult> Post(CategoryDTO dto);
+    public Task<IActionResult> Put(int id, CategoryDTO dto);
+    public Task<IActionResult> Delete(int id);
 }

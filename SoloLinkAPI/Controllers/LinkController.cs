@@ -20,21 +20,21 @@ public class LinkController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public Task<Dictionary<string, string>> Post(LinkDTO body)
+    public Task<IActionResult> Post(LinkDTO body)
     {
         return _linkService.Post(body);
     }
 
     [HttpPut("{id:int}")]
     [Authorize]
-    public Task<Dictionary<string, string>> Put(int id, LinkDTO body)
+    public Task<IActionResult> Put(int id, LinkDTO body)
     {
         return _linkService.Put(id, body);
     }
 
     [HttpDelete("{id:int}")]
     [Authorize]
-    public Task<Dictionary<string, string>> Delete(int id)
+    public Task<IActionResult> Delete(int id)
     {
         return _linkService.Delete(id);
     }

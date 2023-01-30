@@ -20,21 +20,21 @@ public class CategoryController : ControllerBase
 
     [HttpPost]
     [Authorize]
-    public Task<Dictionary<string, string>> Post(CategoryDTO body)
+    public Task<IActionResult> Post(CategoryDTO body)
     {
         return _categoryService.Post(body);
     }
 
     [HttpPut("{id:int}")]
     [Authorize]
-    public Task<Dictionary<string, string>> Put(int id, CategoryDTO body)
+    public Task<IActionResult> Put(int id, CategoryDTO body)
     {
         return _categoryService.Put(id, body);
     }
 
     [HttpDelete("{id:int}")]
     [Authorize]
-    public Task<Dictionary<string, string>> Delete(int id)
+    public Task<IActionResult> Delete(int id)
     {
         return _categoryService.Delete(id);
     }
