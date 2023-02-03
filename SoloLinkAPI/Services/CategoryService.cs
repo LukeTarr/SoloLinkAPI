@@ -86,7 +86,7 @@ public class CategoryService : ICategoryService
             return new OkObjectResult(res);
         }
 
-        res.Add("nessage", "success");
+        res.Add("message", "success");
         return new OkObjectResult(res);
     }
 }
