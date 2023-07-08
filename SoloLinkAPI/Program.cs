@@ -60,11 +60,8 @@ builder.Services.AddScoped<IPageViewService, PageViewService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI(c => { c.DisplayRequestDuration(); });
-}
+app.UseSwagger();
+app.UseSwaggerUI(c => { c.DisplayRequestDuration(); });
 
 // Configure middleware and run the server
 app.UseCors("sololink");

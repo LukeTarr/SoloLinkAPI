@@ -188,7 +188,8 @@ public class AuthService : IAuthService
         };
 
         var key = new SymmetricSecurityKey(
-            Encoding.UTF8.GetBytes(_configuration.GetSection("JWT:Secret").Value));
+            Encoding.UTF8.GetBytes(Environment.GetEnvironmentVariable("JWT_SECRET")!)
+        );
 
         var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha512Signature);
 

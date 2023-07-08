@@ -72,7 +72,7 @@ public class PageViewService : IPageViewService
 
             var viewList = _context.PageViews.Where(view => view.UserId == user.UserId)
                 .GroupBy(view => view.ViewDateTime.Date)
-                .Select(viewGroup => new ViewBucket { Date = viewGroup.Key, TotalViews = viewGroup.Sum(x => 1) })
+                .Select(viewGroup => new ViewBucket {Date = viewGroup.Key, TotalViews = viewGroup.Sum(x => 1)})
                 .ToList();
 
 
