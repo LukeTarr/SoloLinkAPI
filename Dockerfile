@@ -1,5 +1,5 @@
 # Build
-FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:6.0.412 AS build
 
 # ENV Vars
 ARG JWT_SECRET
@@ -16,13 +16,13 @@ RUN dotnet publish "./SoloLinkAPI/SoloLinkAPI.csproj" -c release -o /app --no-re
 
 
 # Serve
-FROM mcr.microsoft.com/dotnet/aspnet:7.0
+FROM mcr.microsoft.com/dotnet/aspnet:6.0.20
 WORKDIR /app
 COPY --from=build /app ./
 
 EXPOSE 80
 EXPOSE 443
 
-ENTRYPOINT ["dotnet", "SoloLinkAPI.dll"]
+CMD ["dotnet", "SoloLinkAPI.dll"]
 
 
